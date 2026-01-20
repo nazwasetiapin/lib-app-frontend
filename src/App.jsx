@@ -14,13 +14,13 @@ function App() {
       return;
     }
 
-    // cek token valid atau tidak
     api.get("/me")
       .then((res) => {
         setUser(res.data);
       })
       .catch(() => {
         localStorage.removeItem("token");
+        setUser(null);
       })
       .finally(() => {
         setLoading(false);
@@ -35,6 +35,15 @@ function App() {
     <div style={{ padding: "40px" }}>
       <h1>Dashboard</h1>
       <p>Halo, {user.name}</p>
+
+      <button
+        onClick={() => {
+          localStorage.removeItem("token");
+          setUser(null);
+        }}
+      >
+        Logout
+      </button>
     </div>
   );
 }
