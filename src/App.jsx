@@ -1,51 +1,29 @@
-import { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import api from "./services/api";
+import Dashboard from "./pages/Dashboard";
 
-function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    api.get("/me")
-      .then((res) => {
-        setUser(res.data);
-      })
-      .catch(() => {
-        localStorage.removeItem("token");
-        setUser(null);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <p>Loading...</p>;
-
-  if (!user) return <Login />;
+export default function App() {
+  const token = localStorage.getItem("token");
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h1>Dashboard</h1>
-      <p>Halo, {user.name}</p>
+    <Routes>
+      {/* default redirect */}
+      <Route
+        path="/"
+        element={<Navigate to={token ? "/dashboard" : "/login"} />}
+      />
 
-      <button
-        onClick={() => {
-          localStorage.removeItem("token");
-          setUser(null);
-        }}
-      >
-        Logout
-      </button>
-    </div>
+      {/* login */}
+      <Route
+        path="/login"
+        element={token ? <Navigate to="/dashboard" /> : <Login />}
+      />
+
+      {/* dashboard */}
+      <Route
+        path="/dashboard"
+        element={token ? <Dashboard /> : <Navigate to="/login" />}
+      />
+    </Routes>
   );
 }
-
-export default App;
